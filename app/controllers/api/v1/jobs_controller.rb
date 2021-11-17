@@ -3,10 +3,12 @@
 module Api
   module V1
     class JobsController < ApplicationController
+      before_action :set_pagination_defaults, only: %i[index]
+      after_action -> { set_pagination_header(:jobs) }, only: [:index]
 
       def index
-        jobs = Job.all
-        render json: jobs
+        @jobs = Job.page(@page)&.per(@per)
+        render json: @jobs
       end
 
       def create
@@ -22,7 +24,7 @@ module Api
       def process_job
         job_ids = Array(params[:job_id])
 
-        jobs= Job.waiting.where(id: job_ids)
+        jobs = Job.waiting.where(id: job_ids)
 
         ActiveRecord::Base.transaction do
           jobs.each(&:progress!)
@@ -34,6 +36,12 @@ module Api
 
       def job_params
         params.require(:job).permit(:name, :priority, :triggered_at)
+      end
+
+      def set_pagination_defaults
+        pagination_service = PaginationService.new(params[:page])
+        @page = pagination_service.page
+        @per = pagination_service.per
       end
     end
   end
