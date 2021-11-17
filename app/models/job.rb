@@ -8,6 +8,8 @@ class Job < ApplicationRecord
                                  message: '%{value} is not a valid state' }
   has_one :movie, dependent: :destroy
 
+  scope :get_by_priority, -> { order(:priority) }
+
   validate :triggered_at_check
   after_commit :trigger_worker, on: :create
 

@@ -24,12 +24,12 @@ module Api
       def process_job
         job_ids = Array(params[:job_id])
 
-        jobs = Job.waiting.where(id: job_ids)
+        jobs_by_priority = Job.waiting.where(id: job_ids).get_by_priority
 
         ActiveRecord::Base.transaction do
-          jobs.each(&:progress!)
+          jobs_by_priority.each(&:progress!)
         end
-        render json: jobs, status: :created
+        render json: jobs_by_priority, status: :created
       end
 
       private
