@@ -4,7 +4,8 @@ class TriggerJobWorker
   include Sidekiq::Worker
 
   def perform(*args)
-    job = Job.waiting.find_by(id: args[0])
-    job.invoke_job
+    JobApiCaller.new.call(args[0])
+    # job = Job.waiting.find_by(id: args[0])
+    # job.invoke_job
   end
 end
