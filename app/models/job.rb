@@ -9,6 +9,7 @@ class Job < ApplicationRecord
   has_one :movie, dependent: :destroy
 
   validate :triggered_at_check
+  after_commit :trigger_worker, on: :create
 
   include AASM
   aasm column: :state, whiny_transitions: false do
@@ -45,6 +46,12 @@ class Job < ApplicationRecord
     add_error and return if persisted? && attribute_changed?(:triggered_at)
 
     add_error if !persisted? && triggered_at <= Time.zone.now
+  end
+
+  def trigger_worker
+    return if triggered_at.nil?
+
+    TriggerJobWorker.perform_at(triggered_at, id)
   end
 
   # return current date and time when job done
