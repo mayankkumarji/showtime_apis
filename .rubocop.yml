@@ -1,0 +1,47 @@
+require:
+  - rubocop-rspec
+  - rubocop-rails
+  - rubocop-performance
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'bin/*'
+    - 'db/*'
+    - 'config/environments/*'
+    - 'config/initializers/*'
+    - 'config/locals/*'
+    - 'config/puma.rb'
+    - 'config/boot.rb'
+    - 'config/spring.rb'
+    - 'config/storage.yml'
+    - 'spec/*'
+    - 'bin/*'
+    - 'vendor/*'
+    - 'tmp/*'
+Metrics/BlockLength:
+  Exclude:
+    - 'Rakefile'
+    - '**/*.rake'
+    - 'spec/**/*.rb'
+
+Layout/LineLength:
+  Max: 120
+
+Style/AndOr:
+  EnforcedStyle: conditionals
+
+Style/Documentation:
+  Enabled: false
+
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: compact
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
