@@ -4,6 +4,11 @@ module Api
   module V1
     class JobsController < ApplicationController
 
+      def index
+        jobs = Job.all
+        render json: jobs
+      end
+
       def create
         job = JobCreation.new(job_params.merge({ created_by: 'api' })).create_job
 
@@ -24,7 +29,7 @@ module Api
         end
         render json: jobs, status: :created
       end
-      
+
       private
 
       def job_params
