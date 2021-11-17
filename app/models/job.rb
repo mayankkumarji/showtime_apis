@@ -8,6 +8,8 @@ class Job < ApplicationRecord
                                  message: '%{value} is not a valid state' }
   has_one :movie, dependent: :destroy
 
+  validate :triggered_at_check
+
   include AASM
   aasm column: :state, whiny_transitions: false do
     # job states
@@ -35,7 +37,16 @@ class Job < ApplicationRecord
   end
 
   private
- 
+
+  # should not update triggered_at once it set.
+  def triggered_at_check
+    return if triggered_at.nil?
+
+    add_error and return if persisted? && attribute_changed?(:triggered_at)
+
+    add_error if !persisted? && triggered_at <= Time.zone.now
+  end
+
   # return current date and time when job done
   def movie_title_and_date
     job_movie = build_movie(title: random_movie_title)
@@ -48,5 +59,9 @@ class Job < ApplicationRecord
 
   def random_movie_title
     (0...8).map { rand(65..90).chr }.join
+  end
+
+  def add_error
+    errors.add(:triggered_at, 'must be greater than current date time or cant changed')
   end
 end
